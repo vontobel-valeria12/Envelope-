@@ -4,6 +4,8 @@
 
 const STORAGE_KEY = "envelopeDataV1";
 
+const LEGACY_STORAGE_KEY = "envelopeStudyDataV1";
+
 
 /* =========================================================
    02. STATE
@@ -13,37 +15,95 @@ let appData = loadAppData();
 
 let currentFolderId = "root";
 
+let studyOrder = [];
+
+let studyIndex = 0;
+
+let allCardsVisible = false;
+
 
 /* =========================================================
    03. ELEMENTS
 ========================================================= */
 
-const breadcrumb =
-  document.getElementById("breadcrumb");
+const sidebar =
+  document.getElementById("sidebar");
 
-const folderGrid =
-  document.getElementById("folderGrid");
+const sidebarBackdrop =
+  document.getElementById("sidebarBackdrop");
 
-const cardList =
-  document.getElementById("cardList");
+const menuButton =
+  document.getElementById("menuButton");
+
+const sidebarCloseButton =
+  document.getElementById("sidebarCloseButton");
+
+
+const homeNavigationButton =
+  document.getElementById("homeNavigationButton");
 
 const createFolderButton =
   document.getElementById("createFolderButton");
 
-const currentFolderLabel =
-  document.getElementById("currentFolderLabel");
+const createCardButton =
+  document.getElementById("createCardButton");
 
-const cardTitleInput =
-  document.getElementById("cardTitleInput");
 
-const cardFrontInput =
-  document.getElementById("cardFrontInput");
+const folderTree =
+  document.getElementById("folderTree");
 
-const cardBackInput =
-  document.getElementById("cardBackInput");
+const breadcrumb =
+  document.getElementById("breadcrumb");
 
-const saveCardButton =
-  document.getElementById("saveCardButton");
+
+const homeView =
+  document.getElementById("homeView");
+
+const folderView =
+  document.getElementById("folderView");
+
+const homeFolderGrid =
+  document.getElementById("homeFolderGrid");
+
+const createHomeFolderButton =
+  document.getElementById("createHomeFolderButton");
+
+
+const folderTitle =
+  document.getElementById("folderTitle");
+
+const folderSummary =
+  document.getElementById("folderSummary");
+
+const subfolderGrid =
+  document.getElementById("subfolderGrid");
+
+const createSubfolderButton =
+  document.getElementById("createSubfolderButton");
+
+const createFolderCardButton =
+  document.getElementById("createFolderCardButton");
+
+
+const shuffleCardsButton =
+  document.getElementById("shuffleCardsButton");
+
+const showAllCardsButton =
+  document.getElementById("showAllCardsButton");
+
+const createFirstCardButton =
+  document.getElementById("createFirstCardButton");
+
+
+const studyEmptyState =
+  document.getElementById("studyEmptyState");
+
+const studyDeck =
+  document.getElementById("studyDeck");
+
+const studyCounter =
+  document.getElementById("studyCounter");
+
 
 const flashcard =
   document.getElementById("flashcard");
@@ -60,11 +120,57 @@ const backCardTitle =
 const backCardContent =
   document.getElementById("backCardContent");
 
-const previewDescription =
-  document.getElementById("previewDescription");
+
+const previousCardButton =
+  document.getElementById("previousCardButton");
 
 const flipCardButton =
   document.getElementById("flipCardButton");
+
+const nextCardButton =
+  document.getElementById("nextCardButton");
+
+
+const allCardsSection =
+  document.getElementById("allCardsSection");
+
+const allCardsGrid =
+  document.getElementById("allCardsGrid");
+
+
+const folderDialog =
+  document.getElementById("folderDialog");
+
+const folderForm =
+  document.getElementById("folderForm");
+
+const folderDialogTitle =
+  document.getElementById("folderDialogTitle");
+
+const folderNameInput =
+  document.getElementById("folderNameInput");
+
+const cancelFolderButton =
+  document.getElementById("cancelFolderButton");
+
+
+const cardDialog =
+  document.getElementById("cardDialog");
+
+const cardForm =
+  document.getElementById("cardForm");
+
+const cardTitleInput =
+  document.getElementById("cardTitleInput");
+
+const cardFrontInput =
+  document.getElementById("cardFrontInput");
+
+const cardBackInput =
+  document.getElementById("cardBackInput");
+
+const cancelCardButton =
+  document.getElementById("cancelCardButton");
 
 
 /* =========================================================
@@ -91,25 +197,34 @@ function createInitialData() {
 ========================================================= */
 
 function loadAppData() {
-  const savedData =
+  const currentData =
     localStorage.getItem(STORAGE_KEY);
 
-  if (!savedData) {
+  const legacyData =
+    localStorage.getItem(LEGACY_STORAGE_KEY);
+
+  const storedData =
+    currentData || legacyData;
+
+
+  if (!storedData) {
     return createInitialData();
   }
 
+
   try {
     const parsedData =
-      JSON.parse(savedData);
+      JSON.parse(storedData);
 
-    if (
-      !Array.isArray(parsedData.folders) ||
-      !Array.isArray(parsedData.cards)
-    ) {
-      return createInitialData();
-    }
+    const normalizedData =
+      normalizeAppData(parsedData);
 
-    return parsedData;
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(normalizedData)
+    );
+
+    return normalizedData;
 
   } catch {
     return createInitialData();
@@ -118,7 +233,108 @@ function loadAppData() {
 
 
 /* =========================================================
-   06. SAVE DATA
+   06. NORMALIZE DATA
+========================================================= */
+
+function normalizeAppData(data) {
+  const folders =
+    Array.isArray(data.folders)
+      ? data.folders
+      : [];
+
+  const cards =
+    Array.isArray(data.cards)
+      ? data.cards
+      : [];
+
+
+  const rootExists =
+    folders.some(
+      folder =>
+        folder.id === "root"
+    );
+
+
+  const normalizedFolders =
+    folders.map(folder => ({
+      id:
+        String(folder.id),
+
+      name:
+        String(
+          folder.name ||
+          "Pasta"
+        ),
+
+      parentId:
+        folder.parentId === null
+          ? null
+          : String(folder.parentId)
+    }));
+
+
+  if (!rootExists) {
+    normalizedFolders.unshift({
+      id: "root",
+      name: "Minhas cartas",
+      parentId: null
+    });
+  }
+
+
+  const normalizedCards =
+    cards.map(card => ({
+      id:
+        String(
+          card.id ||
+          generateId("card")
+        ),
+
+      title:
+        String(
+          card.title ||
+          card.name ||
+          "Sem título"
+        ),
+
+      front:
+        String(
+          card.front ||
+          card.german ||
+          ""
+        ),
+
+      back:
+        String(
+          card.back ||
+          card.portuguese ||
+          ""
+        ),
+
+      folderId:
+        String(
+          card.folderId ||
+          "root"
+        ),
+
+      createdAt:
+        card.createdAt ||
+        new Date().toISOString()
+    }));
+
+
+  return {
+    folders:
+      normalizedFolders,
+
+    cards:
+      normalizedCards
+  };
+}
+
+
+/* =========================================================
+   07. SAVE DATA
 ========================================================= */
 
 function saveAppData() {
@@ -130,7 +346,7 @@ function saveAppData() {
 
 
 /* =========================================================
-   07. ID
+   08. GENERATE ID
 ========================================================= */
 
 function generateId(prefix) {
@@ -138,8 +354,13 @@ function generateId(prefix) {
     window.crypto &&
     typeof window.crypto.randomUUID === "function"
   ) {
-    return `${prefix}-${crypto.randomUUID()}`;
+    return (
+      prefix +
+      "-" +
+      crypto.randomUUID()
+    );
   }
+
 
   return (
     prefix +
@@ -154,242 +375,85 @@ function generateId(prefix) {
 
 
 /* =========================================================
-   08. CURRENT FOLDER
+   09. DATA HELPERS
 ========================================================= */
 
-function getCurrentFolder() {
+function getFolder(folderId) {
   return appData.folders.find(
     folder =>
-      folder.id === currentFolderId
+      folder.id === folderId
   );
 }
 
 
-/* =========================================================
-   09. CHILD FOLDERS
-========================================================= */
+function getCurrentFolder() {
+  return getFolder(
+    currentFolderId
+  );
+}
 
-function getChildFolders() {
+
+function getChildFolders(folderId) {
   return appData.folders.filter(
     folder =>
-      folder.parentId === currentFolderId
+      folder.parentId === folderId
   );
 }
 
 
-/* =========================================================
-   10. CURRENT CARDS
-========================================================= */
-
-function getCurrentCards() {
+function getCardsInFolder(folderId) {
   return appData.cards.filter(
     card =>
-      card.folderId === currentFolderId
+      card.folderId === folderId
   );
 }
 
 
 /* =========================================================
-   11. CREATE FOLDER
+   10. NAVIGATE
 ========================================================= */
 
-function createFolder() {
-  const folderName =
-    prompt("Nome da nova pasta:");
+function navigateToHome() {
+  currentFolderId = "root";
 
-  if (folderName === null) {
+  studyOrder = [];
+
+  studyIndex = 0;
+
+  allCardsVisible = false;
+
+  closeSidebar();
+
+  renderApp();
+}
+
+
+function navigateToFolder(folderId) {
+  const folder =
+    getFolder(folderId);
+
+
+  if (!folder) {
     return;
   }
 
-  const cleanFolderName =
-    folderName.trim();
 
-  if (!cleanFolderName) {
-    alert("Digite um nome para a pasta.");
-    return;
-  }
+  currentFolderId =
+    folderId;
 
-  const folderAlreadyExists =
-    getChildFolders().some(
-      folder =>
-        folder.name.toLowerCase() ===
-        cleanFolderName.toLowerCase()
-    );
+  allCardsVisible =
+    false;
 
-  if (folderAlreadyExists) {
-    alert("Já existe uma pasta com esse nome.");
-    return;
-  }
+  resetStudyDeck();
 
-  const newFolder = {
-    id: generateId("folder"),
-
-    name: cleanFolderName,
-
-    parentId: currentFolderId
-  };
-
-  appData.folders.push(newFolder);
-
-  saveAppData();
+  closeSidebar();
 
   renderApp();
 }
 
 
 /* =========================================================
-   12. OPEN FOLDER
-========================================================= */
-
-function openFolder(folderId) {
-  const folderExists =
-    appData.folders.some(
-      folder =>
-        folder.id === folderId
-    );
-
-  if (!folderExists) {
-    return;
-  }
-
-  currentFolderId = folderId;
-
-  flashcard.classList.remove(
-    "is-flipped"
-  );
-
-  renderApp();
-}
-
-
-/* =========================================================
-   13. SAVE CARD
-========================================================= */
-
-function saveCard() {
-  const title =
-    cardTitleInput.value.trim();
-
-  const front =
-    cardFrontInput.value.trim();
-
-  const back =
-    cardBackInput.value.trim();
-
-
-  if (!title) {
-    alert(
-      "Digite o nome da carta."
-    );
-
-    cardTitleInput.focus();
-
-    return;
-  }
-
-
-  if (!front) {
-    alert(
-      "Digite o conteúdo da frente."
-    );
-
-    cardFrontInput.focus();
-
-    return;
-  }
-
-
-  if (!back) {
-    alert(
-      "Digite o conteúdo do verso."
-    );
-
-    cardBackInput.focus();
-
-    return;
-  }
-
-
-  const newCard = {
-    id: generateId("card"),
-
-    title,
-
-    front,
-
-    back,
-
-    folderId: currentFolderId,
-
-    createdAt:
-      new Date().toISOString()
-  };
-
-
-  appData.cards.push(newCard);
-
-  saveAppData();
-
-  clearCardForm();
-
-  showCard(newCard);
-
-  renderCardList();
-}
-
-
-/* =========================================================
-   14. CLEAR FORM
-========================================================= */
-
-function clearCardForm() {
-  cardTitleInput.value = "";
-
-  cardFrontInput.value = "";
-
-  cardBackInput.value = "";
-}
-
-
-/* =========================================================
-   15. SHOW CARD
-========================================================= */
-
-function showCard(card) {
-  frontCardTitle.textContent =
-    card.title;
-
-  backCardTitle.textContent =
-    card.title;
-
-  frontCardContent.textContent =
-    card.front;
-
-  backCardContent.textContent =
-    card.back;
-
-  previewDescription.textContent =
-    card.title;
-
-  flashcard.classList.remove(
-    "is-flipped"
-  );
-}
-
-
-/* =========================================================
-   16. FLIP CARD
-========================================================= */
-
-function flipCard() {
-  flashcard.classList.toggle(
-    "is-flipped"
-  );
-}
-
-
-/* =========================================================
-   17. FOLDER PATH
+   11. FOLDER PATH
 ========================================================= */
 
 function buildFolderPath() {
@@ -403,10 +467,9 @@ function buildFolderPath() {
     path.unshift(folder);
 
     folder =
-      appData.folders.find(
-        item =>
-          item.id === folder.parentId
-      );
+      folder.parentId
+        ? getFolder(folder.parentId)
+        : null;
   }
 
 
@@ -415,25 +478,716 @@ function buildFolderPath() {
 
 
 /* =========================================================
-   18. RENDER BREADCRUMB
+   12. OPEN FOLDER DIALOG
+========================================================= */
+
+function openFolderDialog() {
+  const currentFolder =
+    getCurrentFolder();
+
+
+  if (
+    currentFolderId === "root"
+  ) {
+    folderDialogTitle.textContent =
+      "Nova pasta";
+  } else {
+    folderDialogTitle.textContent =
+      `Nova subpasta em ${currentFolder.name}`;
+  }
+
+
+  folderForm.reset();
+
+  folderDialog.showModal();
+
+  window.setTimeout(
+    () =>
+      folderNameInput.focus(),
+    50
+  );
+}
+
+
+/* =========================================================
+   13. CREATE FOLDER
+========================================================= */
+
+function createFolder(folderName) {
+  const cleanName =
+    folderName.trim();
+
+
+  if (!cleanName) {
+    return false;
+  }
+
+
+  const duplicateFolder =
+    getChildFolders(
+      currentFolderId
+    ).some(
+      folder =>
+        folder.name
+          .toLowerCase() ===
+        cleanName
+          .toLowerCase()
+    );
+
+
+  if (duplicateFolder) {
+    alert(
+      "Já existe uma pasta com esse nome aqui."
+    );
+
+    return false;
+  }
+
+
+  appData.folders.push({
+    id:
+      generateId("folder"),
+
+    name:
+      cleanName,
+
+    parentId:
+      currentFolderId
+  });
+
+
+  saveAppData();
+
+  renderApp();
+
+  return true;
+}
+
+
+/* =========================================================
+   14. OPEN CARD DIALOG
+========================================================= */
+
+function openCardDialog() {
+  if (
+    currentFolderId === "root"
+  ) {
+    return;
+  }
+
+
+  cardForm.reset();
+
+  cardDialog.showModal();
+
+  window.setTimeout(
+    () =>
+      cardTitleInput.focus(),
+    50
+  );
+}
+
+
+/* =========================================================
+   15. CREATE CARD
+========================================================= */
+
+function createCard(
+  title,
+  front,
+  back
+) {
+  if (
+    currentFolderId === "root"
+  ) {
+    return;
+  }
+
+
+  const newCard = {
+    id:
+      generateId("card"),
+
+    title:
+      title.trim(),
+
+    front:
+      front.trim(),
+
+    back:
+      back.trim(),
+
+    folderId:
+      currentFolderId,
+
+    createdAt:
+      new Date().toISOString()
+  };
+
+
+  appData.cards.push(
+    newCard
+  );
+
+
+  saveAppData();
+
+
+  studyOrder.push(
+    newCard.id
+  );
+
+  studyIndex =
+    studyOrder.length - 1;
+
+
+  allCardsVisible =
+    false;
+
+
+  renderApp();
+}
+
+
+/* =========================================================
+   16. RESET STUDY DECK
+========================================================= */
+
+function resetStudyDeck() {
+  const cards =
+    getCardsInFolder(
+      currentFolderId
+    );
+
+
+  studyOrder =
+    cards.map(
+      card =>
+        card.id
+    );
+
+
+  studyIndex = 0;
+
+  resetFlashcardSide();
+}
+
+
+/* =========================================================
+   17. GET CURRENT STUDY CARD
+========================================================= */
+
+function getCurrentStudyCard() {
+  const cardId =
+    studyOrder[
+      studyIndex
+    ];
+
+
+  if (!cardId) {
+    return null;
+  }
+
+
+  return appData.cards.find(
+    card =>
+      card.id === cardId
+  );
+}
+
+
+/* =========================================================
+   18. SELECT STUDY CARD
+========================================================= */
+
+function selectStudyCard(cardId) {
+  let index =
+    studyOrder.indexOf(
+      cardId
+    );
+
+
+  if (index === -1) {
+    studyOrder.push(
+      cardId
+    );
+
+    index =
+      studyOrder.length - 1;
+  }
+
+
+  studyIndex =
+    index;
+
+
+  allCardsVisible =
+    false;
+
+
+  renderFolderView();
+
+
+  window.setTimeout(
+    () => {
+      document
+        .querySelector(
+          ".study-section"
+        )
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+    },
+    50
+  );
+}
+
+
+/* =========================================================
+   19. SHUFFLE STUDY DECK
+========================================================= */
+
+function shuffleStudyDeck() {
+  const cards =
+    getCardsInFolder(
+      currentFolderId
+    );
+
+
+  studyOrder =
+    cards.map(
+      card =>
+        card.id
+    );
+
+
+  for (
+    let index =
+      studyOrder.length - 1;
+
+    index > 0;
+
+    index--
+  ) {
+    const randomIndex =
+      Math.floor(
+        Math.random() *
+        (index + 1)
+      );
+
+
+    [
+      studyOrder[index],
+      studyOrder[randomIndex]
+    ] = [
+      studyOrder[randomIndex],
+      studyOrder[index]
+    ];
+  }
+
+
+  studyIndex = 0;
+
+  resetFlashcardSide();
+
+  renderStudyCard();
+}
+
+
+/* =========================================================
+   20. PREVIOUS CARD
+========================================================= */
+
+function showPreviousCard() {
+  if (
+    studyIndex <= 0
+  ) {
+    return;
+  }
+
+
+  studyIndex--;
+
+  resetFlashcardSide();
+
+  renderStudyCard();
+}
+
+
+/* =========================================================
+   21. NEXT CARD
+========================================================= */
+
+function showNextCard() {
+  if (
+    studyIndex >=
+    studyOrder.length - 1
+  ) {
+    return;
+  }
+
+
+  studyIndex++;
+
+  resetFlashcardSide();
+
+  renderStudyCard();
+}
+
+
+/* =========================================================
+   22. FLIP CARD
+========================================================= */
+
+function flipCard() {
+  if (
+    studyOrder.length === 0
+  ) {
+    return;
+  }
+
+
+  flashcard.classList.toggle(
+    "is-flipped"
+  );
+}
+
+
+function resetFlashcardSide() {
+  flashcard.classList.remove(
+    "is-flipped"
+  );
+}
+
+
+/* =========================================================
+   23. TOGGLE ALL CARDS
+========================================================= */
+
+function toggleAllCards() {
+  allCardsVisible =
+    !allCardsVisible;
+
+
+  renderAllCards();
+  renderStudyActions();
+
+
+  if (allCardsVisible) {
+    window.setTimeout(
+      () => {
+        allCardsSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      },
+      50
+    );
+  }
+}
+
+
+/* =========================================================
+   24. RENDER APP
+========================================================= */
+
+function renderApp() {
+  renderSidebar();
+  renderBreadcrumb();
+  renderNavigationState();
+
+
+  if (
+    currentFolderId === "root"
+  ) {
+    renderHomeView();
+
+    return;
+  }
+
+
+  renderFolderView();
+}
+
+
+/* =========================================================
+   25. RENDER NAVIGATION STATE
+========================================================= */
+
+function renderNavigationState() {
+  const isHome =
+    currentFolderId === "root";
+
+
+  homeNavigationButton.classList.toggle(
+    "is-active",
+    isHome
+  );
+
+
+  createCardButton.hidden =
+    isHome;
+
+
+  homeView.hidden =
+    !isHome;
+
+  folderView.hidden =
+    isHome;
+}
+
+
+/* =========================================================
+   26. RENDER SIDEBAR
+========================================================= */
+
+function renderSidebar() {
+  folderTree.replaceChildren();
+
+
+  const topLevelFolders =
+    getChildFolders("root");
+
+
+  if (
+    topLevelFolders.length === 0
+  ) {
+    const emptyMessage =
+      document.createElement(
+        "p"
+      );
+
+    emptyMessage.className =
+      "folder-tree-empty";
+
+    emptyMessage.textContent =
+      "Nenhuma pasta criada.";
+
+    folderTree.appendChild(
+      emptyMessage
+    );
+
+    return;
+  }
+
+
+  topLevelFolders.forEach(
+    folder => {
+      folderTree.appendChild(
+        createFolderTreeNode(
+          folder
+        )
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   27. CREATE FOLDER TREE NODE
+========================================================= */
+
+function createFolderTreeNode(
+  folder
+) {
+  const node =
+    document.createElement(
+      "div"
+    );
+
+  node.className =
+    "folder-tree-node";
+
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+  button.type =
+    "button";
+
+  button.className =
+    "folder-tree-button";
+
+
+  if (
+    folder.id ===
+    currentFolderId
+  ) {
+    button.classList.add(
+      "is-active"
+    );
+  }
+
+
+  const icon =
+    document.createElement(
+      "span"
+    );
+
+  icon.textContent =
+    "📁";
+
+
+  const name =
+    document.createElement(
+      "span"
+    );
+
+  name.className =
+    "folder-tree-name";
+
+  name.textContent =
+    folder.name;
+
+
+  const cardCount =
+    document.createElement(
+      "span"
+    );
+
+  cardCount.className =
+    "folder-tree-count";
+
+  cardCount.textContent =
+    getCardsInFolder(
+      folder.id
+    ).length;
+
+
+  button.append(
+    icon,
+    name,
+    cardCount
+  );
+
+
+  button.addEventListener(
+    "click",
+    () => {
+      navigateToFolder(
+        folder.id
+      );
+    }
+  );
+
+
+  node.appendChild(
+    button
+  );
+
+
+  const children =
+    getChildFolders(
+      folder.id
+    );
+
+
+  if (
+    children.length > 0
+  ) {
+    const childrenContainer =
+      document.createElement(
+        "div"
+      );
+
+    childrenContainer.className =
+      "folder-tree-children";
+
+
+    children.forEach(
+      childFolder => {
+        childrenContainer.appendChild(
+          createFolderTreeNode(
+            childFolder
+          )
+        );
+      }
+    );
+
+
+    node.appendChild(
+      childrenContainer
+    );
+  }
+
+
+  return node;
+}
+
+
+/* =========================================================
+   28. RENDER BREADCRUMB
 ========================================================= */
 
 function renderBreadcrumb() {
   breadcrumb.replaceChildren();
 
+
+  const homeButton =
+    document.createElement(
+      "button"
+    );
+
+  homeButton.type =
+    "button";
+
+  homeButton.className =
+    "breadcrumb-button";
+
+  homeButton.textContent =
+    "Home";
+
+
+  homeButton.addEventListener(
+    "click",
+    navigateToHome
+  );
+
+
+  breadcrumb.appendChild(
+    homeButton
+  );
+
+
+  if (
+    currentFolderId === "root"
+  ) {
+    return;
+  }
+
+
   const path =
-    buildFolderPath();
+    buildFolderPath()
+      .filter(
+        folder =>
+          folder.id !== "root"
+      );
 
 
   path.forEach(
-    (folder, index) => {
+    folder => {
+      const separator =
+        document.createElement(
+          "span"
+        );
+
+      separator.className =
+        "breadcrumb-separator";
+
+      separator.textContent =
+        "›";
+
 
       const button =
         document.createElement(
           "button"
         );
 
-      button.type = "button";
+      button.type =
+        "button";
 
       button.className =
         "breadcrumb-button";
@@ -444,81 +1198,187 @@ function renderBreadcrumb() {
 
       button.addEventListener(
         "click",
-        function () {
-          openFolder(folder.id);
+        () => {
+          navigateToFolder(
+            folder.id
+          );
         }
       );
 
 
-      breadcrumb.appendChild(
+      breadcrumb.append(
+        separator,
         button
       );
-
-
-      if (
-        index <
-        path.length - 1
-      ) {
-        const separator =
-          document.createElement(
-            "span"
-          );
-
-        separator.className =
-          "breadcrumb-separator";
-
-        separator.textContent =
-          "›";
-
-        breadcrumb.appendChild(
-          separator
-        );
-      }
-
     }
   );
 }
 
 
 /* =========================================================
-   19. RENDER CURRENT FOLDER
+   29. RENDER HOME
 ========================================================= */
 
-function renderCurrentFolder() {
-  const folder =
-    getCurrentFolder();
+function renderHomeView() {
+  homeView.hidden =
+    false;
 
-  if (!folder) {
-    return;
-  }
+  folderView.hidden =
+    true;
 
-  currentFolderLabel.textContent =
-    `📁 ${folder.name}`;
+
+  renderFolderCards(
+    homeFolderGrid,
+    getChildFolders("root")
+  );
 }
 
 
 /* =========================================================
-   20. RENDER FOLDERS
+   30. RENDER FOLDER VIEW
 ========================================================= */
 
-function renderFolders() {
-  folderGrid.replaceChildren();
+function renderFolderView() {
+  homeView.hidden =
+    true;
 
-  const folders =
-    getChildFolders();
+  folderView.hidden =
+    false;
 
 
-  if (folders.length === 0) {
+  const folder =
+    getCurrentFolder();
+
+
+  if (!folder) {
+    navigateToHome();
+
+    return;
+  }
+
+
+  const subfolders =
+    getChildFolders(
+      folder.id
+    );
+
+  const cards =
+    getCardsInFolder(
+      folder.id
+    );
+
+
+  folderTitle.textContent =
+    folder.name;
+
+
+  folderSummary.textContent =
+    `${cards.length} ${
+      cards.length === 1
+        ? "carta"
+        : "cartas"
+    } · ${subfolders.length} ${
+      subfolders.length === 1
+        ? "subpasta"
+        : "subpastas"
+    }`;
+
+
+  renderFolderCards(
+    subfolderGrid,
+    subfolders
+  );
+
+
+  synchronizeStudyOrder();
+
+  renderStudyCard();
+
+  renderStudyActions();
+
+  renderAllCards();
+}
+
+
+/* =========================================================
+   31. SYNCHRONIZE STUDY ORDER
+========================================================= */
+
+function synchronizeStudyOrder() {
+  const cards =
+    getCardsInFolder(
+      currentFolderId
+    );
+
+
+  const cardIds =
+    cards.map(
+      card =>
+        card.id
+    );
+
+
+  studyOrder =
+    studyOrder.filter(
+      cardId =>
+        cardIds.includes(cardId)
+    );
+
+
+  cardIds.forEach(
+    cardId => {
+      if (
+        !studyOrder.includes(
+          cardId
+        )
+      ) {
+        studyOrder.push(
+          cardId
+        );
+      }
+    }
+  );
+
+
+  if (
+    studyIndex >
+    studyOrder.length - 1
+  ) {
+    studyIndex =
+      Math.max(
+        0,
+        studyOrder.length - 1
+      );
+  }
+}
+
+
+/* =========================================================
+   32. RENDER FOLDER CARDS
+========================================================= */
+
+function renderFolderCards(
+  container,
+  folders
+) {
+  container.replaceChildren();
+
+
+  if (
+    folders.length === 0
+  ) {
     const emptyState =
-      document.createElement("p");
+      document.createElement(
+        "div"
+      );
 
     emptyState.className =
-      "empty-state";
+      "folder-grid-empty";
 
     emptyState.textContent =
       "Nenhuma pasta aqui.";
 
-    folderGrid.appendChild(
+    container.appendChild(
       emptyState
     );
 
@@ -526,208 +1386,445 @@ function renderFolders() {
   }
 
 
-  folders.forEach(folder => {
+  folders.forEach(
+    folder => {
+      const button =
+        document.createElement(
+          "button"
+        );
 
-    const button =
-      document.createElement(
-        "button"
+      button.type =
+        "button";
+
+      button.className =
+        "folder-card";
+
+
+      const icon =
+        document.createElement(
+          "span"
+        );
+
+      icon.className =
+        "folder-card-icon";
+
+      icon.textContent =
+        "📁";
+
+
+      const title =
+        document.createElement(
+          "span"
+        );
+
+      title.className =
+        "folder-card-title";
+
+      title.textContent =
+        folder.name;
+
+
+      const cardCount =
+        getCardsInFolder(
+          folder.id
+        ).length;
+
+      const childCount =
+        getChildFolders(
+          folder.id
+        ).length;
+
+
+      const meta =
+        document.createElement(
+          "span"
+        );
+
+      meta.className =
+        "folder-card-meta";
+
+      meta.textContent =
+        `${cardCount} ${
+          cardCount === 1
+            ? "carta"
+            : "cartas"
+        } · ${childCount} ${
+          childCount === 1
+            ? "subpasta"
+            : "subpastas"
+        }`;
+
+
+      button.append(
+        icon,
+        title,
+        meta
       );
 
-    button.type = "button";
 
-    button.className =
-      "folder-button";
-
-
-    const icon =
-      document.createElement(
-        "span"
+      button.addEventListener(
+        "click",
+        () => {
+          navigateToFolder(
+            folder.id
+          );
+        }
       );
 
-    icon.className =
-      "folder-icon";
 
-    icon.textContent =
-      "📁";
-
-
-    const name =
-      document.createElement(
-        "span"
+      container.appendChild(
+        button
       );
-
-    name.className =
-      "folder-name";
-
-    name.textContent =
-      folder.name;
-
-
-    button.append(
-      icon,
-      name
-    );
-
-
-    button.addEventListener(
-      "click",
-      function () {
-        openFolder(folder.id);
-      }
-    );
-
-
-    folderGrid.appendChild(
-      button
-    );
-
-  });
+    }
+  );
 }
 
 
 /* =========================================================
-   21. RENDER CARD LIST
+   33. RENDER STUDY CARD
 ========================================================= */
 
-function renderCardList() {
-  cardList.replaceChildren();
+function renderStudyCard() {
+  const cards =
+    getCardsInFolder(
+      currentFolderId
+    );
+
+
+  const hasCards =
+    cards.length > 0;
+
+
+  studyEmptyState.hidden =
+    hasCards;
+
+  studyDeck.hidden =
+    !hasCards;
+
+
+  if (!hasCards) {
+    resetFlashcardSide();
+
+    return;
+  }
+
+
+  const currentCard =
+    getCurrentStudyCard();
+
+
+  if (!currentCard) {
+    resetStudyDeck();
+
+    return renderStudyCard();
+  }
+
+
+  frontCardTitle.textContent =
+    currentCard.title;
+
+  backCardTitle.textContent =
+    currentCard.title;
+
+  frontCardContent.textContent =
+    currentCard.front;
+
+  backCardContent.textContent =
+    currentCard.back;
+
+
+  studyCounter.textContent =
+    `${studyIndex + 1} / ${studyOrder.length}`;
+
+
+  previousCardButton.disabled =
+    studyIndex === 0;
+
+
+  nextCardButton.disabled =
+    studyIndex ===
+    studyOrder.length - 1;
+
+
+  resetFlashcardSide();
+}
+
+
+/* =========================================================
+   34. RENDER STUDY ACTIONS
+========================================================= */
+
+function renderStudyActions() {
+  const cards =
+    getCardsInFolder(
+      currentFolderId
+    );
+
+
+  shuffleCardsButton.disabled =
+    cards.length < 2;
+
+
+  showAllCardsButton.disabled =
+    cards.length === 0;
+
+
+  showAllCardsButton.textContent =
+    allCardsVisible
+      ? "↩ Voltar ao estudo"
+      : "🗂 Todas as cartas";
+}
+
+
+/* =========================================================
+   35. RENDER ALL CARDS
+========================================================= */
+
+function renderAllCards() {
+  allCardsSection.hidden =
+    !allCardsVisible;
+
+
+  allCardsGrid.replaceChildren();
+
+
+  if (!allCardsVisible) {
+    return;
+  }
+
 
   const cards =
-    getCurrentCards();
-
-
-  if (cards.length === 0) {
-    const emptyState =
-      document.createElement("p");
-
-    emptyState.className =
-      "empty-state";
-
-    emptyState.textContent =
-      "Nenhuma carta nesta pasta.";
-
-    cardList.appendChild(
-      emptyState
+    getCardsInFolder(
+      currentFolderId
     );
 
-    return;
+
+  cards.forEach(
+    card => {
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.type =
+        "button";
+
+      button.className =
+        "saved-card-button";
+
+
+      const icon =
+        document.createElement(
+          "span"
+        );
+
+      icon.className =
+        "saved-card-icon";
+
+      icon.textContent =
+        "🃏";
+
+
+      const title =
+        document.createElement(
+          "span"
+        );
+
+      title.className =
+        "saved-card-title";
+
+      title.textContent =
+        card.title;
+
+
+      const preview =
+        document.createElement(
+          "span"
+        );
+
+      preview.className =
+        "saved-card-preview";
+
+      preview.textContent =
+        card.front;
+
+
+      button.append(
+        icon,
+        title,
+        preview
+      );
+
+
+      button.addEventListener(
+        "click",
+        () => {
+          selectStudyCard(
+            card.id
+          );
+        }
+      );
+
+
+      allCardsGrid.appendChild(
+        button
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   36. SIDEBAR
+========================================================= */
+
+function openSidebar() {
+  document.body.classList.add(
+    "sidebar-open"
+  );
+}
+
+
+function closeSidebar() {
+  document.body.classList.remove(
+    "sidebar-open"
+  );
+}
+
+
+/* =========================================================
+   37. FOLDER FORM EVENTS
+========================================================= */
+
+folderForm.addEventListener(
+  "submit",
+  event => {
+    event.preventDefault();
+
+
+    const created =
+      createFolder(
+        folderNameInput.value
+      );
+
+
+    if (created) {
+      folderDialog.close();
+    }
   }
-
-
-  cards.forEach(card => {
-
-    const button =
-      document.createElement(
-        "button"
-      );
-
-    button.type = "button";
-
-    button.className =
-      "card-list-button";
-
-
-    const icon =
-      document.createElement(
-        "span"
-      );
-
-    icon.className =
-      "card-list-icon";
-
-    icon.textContent =
-      "🃏";
-
-
-    const info =
-      document.createElement(
-        "span"
-      );
-
-    info.className =
-      "card-list-info";
-
-
-    const title =
-      document.createElement(
-        "span"
-      );
-
-    title.className =
-      "card-list-title";
-
-    title.textContent =
-      card.title;
-
-
-    const preview =
-      document.createElement(
-        "span"
-      );
-
-    preview.className =
-      "card-list-preview";
-
-    preview.textContent =
-      card.front;
-
-
-    info.append(
-      title,
-      preview
-    );
-
-
-    button.append(
-      icon,
-      info
-    );
-
-
-    button.addEventListener(
-      "click",
-      function () {
-        showCard(card);
-      }
-    );
-
-
-    cardList.appendChild(
-      button
-    );
-
-  });
-}
-
-
-/* =========================================================
-   22. RENDER APP
-========================================================= */
-
-function renderApp() {
-  renderBreadcrumb();
-
-  renderCurrentFolder();
-
-  renderFolders();
-
-  renderCardList();
-}
-
-
-/* =========================================================
-   23. EVENTS
-========================================================= */
-
-createFolderButton.addEventListener(
-  "click",
-  createFolder
 );
 
 
-saveCardButton.addEventListener(
+cancelFolderButton.addEventListener(
   "click",
-  saveCard
+  () => {
+    folderDialog.close();
+  }
+);
+
+
+/* =========================================================
+   38. CARD FORM EVENTS
+========================================================= */
+
+cardForm.addEventListener(
+  "submit",
+  event => {
+    event.preventDefault();
+
+
+    const title =
+      cardTitleInput.value.trim();
+
+    const front =
+      cardFrontInput.value.trim();
+
+    const back =
+      cardBackInput.value.trim();
+
+
+    if (
+      !title ||
+      !front ||
+      !back
+    ) {
+      return;
+    }
+
+
+    createCard(
+      title,
+      front,
+      back
+    );
+
+
+    cardDialog.close();
+  }
+);
+
+
+cancelCardButton.addEventListener(
+  "click",
+  () => {
+    cardDialog.close();
+  }
+);
+
+
+/* =========================================================
+   39. NAVIGATION EVENTS
+========================================================= */
+
+homeNavigationButton.addEventListener(
+  "click",
+  navigateToHome
+);
+
+
+createFolderButton.addEventListener(
+  "click",
+  openFolderDialog
+);
+
+
+createHomeFolderButton.addEventListener(
+  "click",
+  openFolderDialog
+);
+
+
+createSubfolderButton.addEventListener(
+  "click",
+  openFolderDialog
+);
+
+
+createCardButton.addEventListener(
+  "click",
+  openCardDialog
+);
+
+
+createFolderCardButton.addEventListener(
+  "click",
+  openCardDialog
+);
+
+
+createFirstCardButton.addEventListener(
+  "click",
+  openCardDialog
+);
+
+
+/* =========================================================
+   40. STUDY EVENTS
+========================================================= */
+
+flashcard.addEventListener(
+  "click",
+  flipCard
 );
 
 
@@ -737,15 +1834,37 @@ flipCardButton.addEventListener(
 );
 
 
-flashcard.addEventListener(
+previousCardButton.addEventListener(
   "click",
-  flipCard
+  showPreviousCard
 );
 
 
+nextCardButton.addEventListener(
+  "click",
+  showNextCard
+);
+
+
+shuffleCardsButton.addEventListener(
+  "click",
+  shuffleStudyDeck
+);
+
+
+showAllCardsButton.addEventListener(
+  "click",
+  toggleAllCards
+);
+
+
+/* =========================================================
+   41. FLASHCARD KEYBOARD
+========================================================= */
+
 flashcard.addEventListener(
   "keydown",
-  function (event) {
+  event => {
 
     if (
       event.key === "Enter" ||
@@ -754,6 +1873,24 @@ flashcard.addEventListener(
       event.preventDefault();
 
       flipCard();
+
+      return;
+    }
+
+
+    if (
+      event.key === "ArrowLeft"
+    ) {
+      showPreviousCard();
+
+      return;
+    }
+
+
+    if (
+      event.key === "ArrowRight"
+    ) {
+      showNextCard();
     }
 
   }
@@ -761,7 +1898,29 @@ flashcard.addEventListener(
 
 
 /* =========================================================
-   24. START
+   42. MOBILE MENU EVENTS
+========================================================= */
+
+menuButton.addEventListener(
+  "click",
+  openSidebar
+);
+
+
+sidebarCloseButton.addEventListener(
+  "click",
+  closeSidebar
+);
+
+
+sidebarBackdrop.addEventListener(
+  "click",
+  closeSidebar
+);
+
+
+/* =========================================================
+   43. START
 ========================================================= */
 
 renderApp();
