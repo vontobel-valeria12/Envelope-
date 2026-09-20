@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Deutsch Karten</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <main class="page">
+
+    <!-- 01. HEADER -->
+    <header class="header">
+      <h1>🇩🇪 Deutsch Karten</h1>
+      <p>Leia, pense e vire a carta.</p>
+    </header>
+
+
+    <!-- 02. EDITOR -->
+    <section class="editor">
+
+      <div class="field">
+        <label for="germanInput">
+          🇩🇪 Frase em alemão
+        </label>
+
+        <textarea
+          id="germanInput"
+          placeholder="Ex.: Ich halte heute einen Vortrag."
+        ></textarea>
+      </div>
+
+
+      <div class="field">
+        <label for="portugueseInput">
+          🇧🇷 Tradução em português
+        </label>
+
+        <textarea
+          id="portugueseInput"
+          placeholder="Ex.: Hoje eu faço uma apresentação."
+        ></textarea>
+      </div>
+
+
+      <button
+        type="button"
+        class="create-button"
+        id="createCardButton"
+      >
+        Criar carta
+      </button>
+
+    </section>
+
+
+    <!-- 03. FLASHCARD -->
+    <section class="card-area">
+
+      <div
+        class="flashcard"
+        id="flashcard"
+        role="button"
+        tabindex="0"
+      >
+
+        <div class="card-inner">
+
+          <!-- FRONT -->
+          <div class="card-face card-front">
+
+            <span class="language">
+              🇩🇪 Alemão
+            </span>
+
+            <div
+              class="card-text"
+              id="frontText"
+            >
+              Ich halte heute einen Vortrag.
+            </div>
+
+            <span class="hint">
+              Clique para virar ↔️
+            </span>
+
+          </div>
+
+
+          <!-- BACK -->
+          <div class="card-face card-back">
+
+            <span class="language">
+              🇧🇷 Português
+            </span>
+
+            <div
+              class="card-text"
+              id="backText"
+            >
+              Hoje eu faço uma apresentação.
+            </div>
+
+            <span class="hint">
+              Clique para voltar ↔️
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- 04. CONTROLS -->
+    <div class="card-controls">
+
+      <button
+        type="button"
+        class="flip-button"
+        id="flipButton"
+      >
+        ↔️ Virar carta
+      </button>
+
+    </div>
+
+  </main>
+
+
+  <script src="js/script.js"></script>
+
+</body>
+</html>
