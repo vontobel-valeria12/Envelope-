@@ -13,258 +13,746 @@
 
   <link
     rel="stylesheet"
-    href="style.css"
+    href="css/style.css"
   >
 </head>
 
 <body>
 
-  <main class="app-shell">
+  <div class="app-layout">
 
     <!-- =====================================================
-         01. HEADER
+         01. SIDEBAR
     ====================================================== -->
 
-    <header class="app-header">
+    <aside
+      class="sidebar"
+      id="sidebar"
+    >
 
-      <div>
-        <h1>Envelope</h1>
-        <p>Organize e estude suas cartas.</p>
+      <div class="sidebar-header">
+
+        <div>
+          <h1 class="sidebar-title">
+            Envelope
+          </h1>
+
+          <p class="sidebar-subtitle">
+            Cartas de estudo
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="sidebar-close-button"
+          id="sidebarCloseButton"
+          aria-label="Fechar menu"
+        >
+          ×
+        </button>
+
       </div>
-
-    </header>
-
-
-    <!-- =====================================================
-         02. BREADCRUMB
-    ====================================================== -->
-
-    <nav
-      class="breadcrumb"
-      id="breadcrumb"
-      aria-label="Caminho das pastas"
-    ></nav>
-
-
-    <!-- =====================================================
-         03. ACTIONS
-    ====================================================== -->
-
-    <section class="toolbar">
-
-      <button
-        type="button"
-        class="button button-primary"
-        id="createFolderButton"
-      >
-        ＋ Nova pasta
-      </button>
-
-    </section>
-
-
-    <!-- =====================================================
-         04. WORKSPACE
-    ====================================================== -->
-
-    <section class="workspace-grid">
-
-      <!-- LIBRARY -->
-      <section class="library-panel">
-
-        <div class="section-header">
-          <h2>Pastas</h2>
-        </div>
-
-        <div
-          class="folder-grid"
-          id="folderGrid"
-        ></div>
-
-
-        <div class="section-header section-header-spaced">
-          <h2>Cartas</h2>
-        </div>
-
-        <div
-          class="card-list"
-          id="cardList"
-        ></div>
-
-      </section>
 
 
       <!-- ===================================================
-           05. CARD FORM
+           02. MAIN NAVIGATION
       ==================================================== -->
 
-      <section class="card-form-panel">
+      <nav class="sidebar-navigation">
 
-        <div class="section-header">
-          <h2>Nova carta</h2>
-
-          <span
-            class="current-folder-label"
-            id="currentFolderLabel"
-          ></span>
-        </div>
-
-
-        <div class="form-field">
-
-          <label for="cardTitleInput">
-            Nome da carta
-          </label>
-
-          <input
-            id="cardTitleInput"
-            type="text"
-            autocomplete="off"
-            placeholder="Ex.: Konjunktiv II"
-          >
-
-        </div>
-
-
-        <div class="form-field">
-
-          <label for="cardFrontInput">
-            Frente
-          </label>
-
-          <textarea
-            id="cardFrontInput"
-            placeholder="Digite o conteúdo da frente da carta."
-          ></textarea>
-
-        </div>
-
-
-        <div class="form-field">
-
-          <label for="cardBackInput">
-            Verso
-          </label>
-
-          <textarea
-            id="cardBackInput"
-            placeholder="Digite o conteúdo do verso da carta."
-          ></textarea>
-
-        </div>
+        <button
+          type="button"
+          class="navigation-button"
+          id="homeNavigationButton"
+        >
+          <span>🏠</span>
+          <span>Home</span>
+        </button>
 
 
         <button
           type="button"
-          class="button button-primary button-full"
-          id="saveCardButton"
+          class="navigation-button"
+          id="createFolderButton"
         >
-          Salvar carta
+          <span>📁</span>
+          <span>＋ Pasta</span>
         </button>
+
+
+        <button
+          type="button"
+          class="navigation-button"
+          id="createCardButton"
+          hidden
+        >
+          <span>🃏</span>
+          <span>＋ Carta</span>
+        </button>
+
+      </nav>
+
+
+      <!-- ===================================================
+           03. FOLDER TREE
+      ==================================================== -->
+
+      <section class="sidebar-folders">
+
+        <h2 class="sidebar-section-title">
+          Pastas
+        </h2>
+
+        <div
+          class="folder-tree"
+          id="folderTree"
+        ></div>
 
       </section>
 
-    </section>
+    </aside>
 
 
     <!-- =====================================================
-         06. FLASHCARD PREVIEW
+         04. MOBILE BACKDROP
     ====================================================== -->
 
-    <section class="preview-section">
+    <button
+      type="button"
+      class="sidebar-backdrop"
+      id="sidebarBackdrop"
+      aria-label="Fechar menu"
+    ></button>
 
-      <div class="section-header preview-header">
+
+    <!-- =====================================================
+         05. PAGE
+    ====================================================== -->
+
+    <div class="page-shell">
+
+      <header class="topbar">
+
+        <button
+          type="button"
+          class="menu-button"
+          id="menuButton"
+          aria-label="Abrir menu"
+        >
+          ☰
+        </button>
+
+
+        <nav
+          class="breadcrumb"
+          id="breadcrumb"
+          aria-label="Caminho atual"
+        ></nav>
+
+      </header>
+
+
+      <main class="main-content">
+
+        <!-- =================================================
+             06. HOME
+        ================================================== -->
+
+        <section
+          class="home-view"
+          id="homeView"
+        >
+
+          <div class="page-heading">
+
+            <p class="page-eyebrow">
+              Home
+            </p>
+
+            <h2>
+              Minhas cartas
+            </h2>
+
+            <p>
+              Organize suas cartas em pastas e subpastas.
+            </p>
+
+          </div>
+
+
+          <!-- FEATURED CARD -->
+
+          <article class="home-study-card">
+
+            <div class="home-study-flags">
+
+              <span>🇩🇪</span>
+
+              <span class="home-study-arrow">
+                ×
+              </span>
+
+              <span>🇧🇷</span>
+
+            </div>
+
+            <div>
+
+              <span class="home-study-icon">
+                🃏
+              </span>
+
+              <h3>
+                Alemão × Português
+              </h3>
+
+              <p>
+                Cartas para estudar frases, verbos,
+                vocabulário e gramática.
+              </p>
+
+            </div>
+
+          </article>
+
+
+          <!-- HOME FOLDERS -->
+
+          <section class="home-folder-section">
+
+            <div class="section-heading">
+
+              <div>
+
+                <p class="section-eyebrow">
+                  Biblioteca
+                </p>
+
+                <h3>
+                  Pastas
+                </h3>
+
+              </div>
+
+              <button
+                type="button"
+                class="button button-primary"
+                id="createHomeFolderButton"
+              >
+                ＋ Pasta
+              </button>
+
+            </div>
+
+
+            <div
+              class="folder-card-grid"
+              id="homeFolderGrid"
+            ></div>
+
+          </section>
+
+        </section>
+
+
+        <!-- =================================================
+             07. FOLDER VIEW
+        ================================================== -->
+
+        <section
+          class="folder-view"
+          id="folderView"
+          hidden
+        >
+
+          <header class="folder-page-header">
+
+            <div>
+
+              <p class="page-eyebrow">
+                Pasta
+              </p>
+
+              <h2 id="folderTitle">
+                Pasta
+              </h2>
+
+              <p
+                class="folder-summary"
+                id="folderSummary"
+              ></p>
+
+            </div>
+
+
+            <div class="folder-create-actions">
+
+              <button
+                type="button"
+                class="button button-secondary"
+                id="createSubfolderButton"
+              >
+                📁 ＋ Subpasta
+              </button>
+
+              <button
+                type="button"
+                class="button button-primary"
+                id="createFolderCardButton"
+              >
+                🃏 ＋ Carta
+              </button>
+
+            </div>
+
+          </header>
+
+
+          <!-- =================================================
+               08. SUBFOLDERS
+          ================================================== -->
+
+          <section class="subfolder-section">
+
+            <div class="section-heading">
+
+              <div>
+
+                <p class="section-eyebrow">
+                  Organização
+                </p>
+
+                <h3>
+                  Subpastas
+                </h3>
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="folder-card-grid"
+              id="subfolderGrid"
+            ></div>
+
+          </section>
+
+
+          <!-- =================================================
+               09. STUDY ACTIONS
+          ================================================== -->
+
+          <section class="study-section">
+
+            <div class="section-heading study-heading">
+
+              <div>
+
+                <p class="section-eyebrow">
+                  Estudo
+                </p>
+
+                <h3>
+                  Cartas
+                </h3>
+
+              </div>
+
+
+              <div class="study-actions">
+
+                <button
+                  type="button"
+                  class="button button-secondary"
+                  id="shuffleCardsButton"
+                >
+                  🔀 Embaralhar
+                </button>
+
+                <button
+                  type="button"
+                  class="button button-secondary"
+                  id="showAllCardsButton"
+                >
+                  🗂 Todas as cartas
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <!-- EMPTY -->
+
+            <div
+              class="study-empty-state"
+              id="studyEmptyState"
+              hidden
+            >
+
+              <span class="study-empty-icon">
+                🃏
+              </span>
+
+              <h4>
+                Nenhuma carta nesta pasta
+              </h4>
+
+              <p>
+                Crie a primeira carta para começar a estudar.
+              </p>
+
+              <button
+                type="button"
+                class="button button-primary"
+                id="createFirstCardButton"
+              >
+                ＋ Criar carta
+              </button>
+
+            </div>
+
+
+            <!-- DECK -->
+
+            <div
+              class="study-deck"
+              id="studyDeck"
+            >
+
+              <div class="study-counter">
+
+                <span id="studyCounter">
+                  1 / 1
+                </span>
+
+              </div>
+
+
+              <div
+                class="flashcard"
+                id="flashcard"
+                role="button"
+                tabindex="0"
+                aria-label="Virar carta"
+              >
+
+                <div class="flashcard-inner">
+
+                  <!-- FRONT -->
+
+                  <article class="flashcard-face flashcard-front">
+
+                    <span class="flashcard-side">
+                      Frente
+                    </span>
+
+                    <h4
+                      class="flashcard-title"
+                      id="frontCardTitle"
+                    >
+                      Nome da carta
+                    </h4>
+
+                    <div
+                      class="flashcard-content"
+                      id="frontCardContent"
+                    >
+                      Conteúdo da frente
+                    </div>
+
+                    <span class="flashcard-hint">
+                      Toque para virar ↔
+                    </span>
+
+                  </article>
+
+
+                  <!-- BACK -->
+
+                  <article class="flashcard-face flashcard-back">
+
+                    <span class="flashcard-side">
+                      Verso
+                    </span>
+
+                    <h4
+                      class="flashcard-title"
+                      id="backCardTitle"
+                    >
+                      Nome da carta
+                    </h4>
+
+                    <div
+                      class="flashcard-content"
+                      id="backCardContent"
+                    >
+                      Conteúdo do verso
+                    </div>
+
+                    <span class="flashcard-hint">
+                      Toque para voltar ↔
+                    </span>
+
+                  </article>
+
+                </div>
+
+              </div>
+
+
+              <!-- STUDY CONTROLS -->
+
+              <div class="study-controls">
+
+                <button
+                  type="button"
+                  class="study-navigation-button"
+                  id="previousCardButton"
+                >
+                  ← Anterior
+                </button>
+
+
+                <button
+                  type="button"
+                  class="flip-card-button"
+                  id="flipCardButton"
+                >
+                  ↔ Virar
+                </button>
+
+
+                <button
+                  type="button"
+                  class="study-navigation-button"
+                  id="nextCardButton"
+                >
+                  Próxima →
+                </button>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =================================================
+               10. ALL CARDS
+          ================================================== -->
+
+          <section
+            class="all-cards-section"
+            id="allCardsSection"
+            hidden
+          >
+
+            <div class="section-heading">
+
+              <div>
+
+                <p class="section-eyebrow">
+                  Biblioteca
+                </p>
+
+                <h3>
+                  Todas as cartas
+                </h3>
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="all-cards-grid"
+              id="allCardsGrid"
+            ></div>
+
+          </section>
+
+        </section>
+
+      </main>
+
+    </div>
+
+  </div>
+
+
+  <!-- =======================================================
+       11. FOLDER DIALOG
+  ======================================================== -->
+
+  <dialog
+    class="app-dialog"
+    id="folderDialog"
+  >
+
+    <form
+      class="dialog-form"
+      id="folderForm"
+    >
+
+      <div class="dialog-header">
 
         <div>
-          <h2>Carta</h2>
 
-          <p
-            class="preview-description"
-            id="previewDescription"
-          >
-            Selecione ou crie uma carta.
+          <p class="section-eyebrow">
+            Organização
           </p>
+
+          <h2 id="folderDialogTitle">
+            Nova pasta
+          </h2>
+
         </div>
+
+        <button
+          type="button"
+          class="dialog-close-button"
+          id="cancelFolderButton"
+          aria-label="Fechar"
+        >
+          ×
+        </button>
 
       </div>
 
 
-      <div
-        class="flashcard"
-        id="flashcard"
-        role="button"
-        tabindex="0"
-        aria-label="Virar carta"
-      >
+      <div class="form-field">
 
-        <div class="flashcard-inner">
+        <label for="folderNameInput">
+          Nome da pasta
+        </label>
 
-          <!-- FRONT -->
-          <article class="flashcard-face flashcard-front">
-
-            <span class="card-side-label">
-              Frente
-            </span>
-
-            <h3
-              class="flashcard-title"
-              id="frontCardTitle"
-            >
-              Nome da carta
-            </h3>
-
-            <div
-              class="flashcard-content"
-              id="frontCardContent"
-            >
-              Conteúdo da frente
-            </div>
-
-          </article>
-
-
-          <!-- BACK -->
-          <article class="flashcard-face flashcard-back">
-
-            <span class="card-side-label">
-              Verso
-            </span>
-
-            <h3
-              class="flashcard-title"
-              id="backCardTitle"
-            >
-              Nome da carta
-            </h3>
-
-            <div
-              class="flashcard-content"
-              id="backCardContent"
-            >
-              Conteúdo do verso
-            </div>
-
-          </article>
-
-        </div>
+        <input
+          type="text"
+          id="folderNameInput"
+          autocomplete="off"
+          maxlength="80"
+          placeholder="Ex.: Verbos"
+          required
+        >
 
       </div>
 
 
       <button
-        type="button"
-        class="button button-secondary flip-button"
-        id="flipCardButton"
+        type="submit"
+        class="button button-primary button-full"
       >
-        ↔ Virar carta
+        Salvar pasta
       </button>
 
-    </section>
+    </form>
 
-  </main>
+  </dialog>
 
 
-  <script src="script.js"></script>
+  <!-- =======================================================
+       12. CARD DIALOG
+  ======================================================== -->
+
+  <dialog
+    class="app-dialog card-dialog"
+    id="cardDialog"
+  >
+
+    <form
+      class="dialog-form"
+      id="cardForm"
+    >
+
+      <div class="dialog-header">
+
+        <div>
+
+          <p class="section-eyebrow">
+            Nova carta
+          </p>
+
+          <h2>
+            Criar carta
+          </h2>
+
+        </div>
+
+        <button
+          type="button"
+          class="dialog-close-button"
+          id="cancelCardButton"
+          aria-label="Fechar"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="cardTitleInput">
+          Nome da carta
+        </label>
+
+        <input
+          type="text"
+          id="cardTitleInput"
+          autocomplete="off"
+          maxlength="120"
+          placeholder="Ex.: Präsens"
+          required
+        >
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="cardFrontInput">
+          Frente
+        </label>
+
+        <textarea
+          id="cardFrontInput"
+          placeholder="Conteúdo da frente da carta."
+          required
+        ></textarea>
+
+      </div>
+
+
+      <div class="form-field">
+
+        <label for="cardBackInput">
+          Verso
+        </label>
+
+        <textarea
+          id="cardBackInput"
+          placeholder="Conteúdo do verso da carta."
+          required
+        ></textarea>
+
+      </div>
+
+
+      <button
+        type="submit"
+        class="button button-primary button-full"
+      >
+        Salvar carta
+      </button>
+
+    </form>
+
+  </dialog>
+
+
+  <script src="js/script.js"></script>
 
 </body>
 
