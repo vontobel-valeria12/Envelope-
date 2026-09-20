@@ -1,140 +1,271 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Deutsch Karten</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <link rel="stylesheet" href="style.css">
+  <title>Envelope</title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
 </head>
 
 <body>
 
-  <main class="page">
+  <main class="app-shell">
 
-    <!-- 01. HEADER -->
-    <header class="header">
-      <h1>🇩🇪 Deutsch Karten</h1>
-      <p>Leia, pense e vire a carta.</p>
+    <!-- =====================================================
+         01. HEADER
+    ====================================================== -->
+
+    <header class="app-header">
+
+      <div>
+        <h1>Envelope</h1>
+        <p>Organize e estude suas cartas.</p>
+      </div>
+
     </header>
 
 
-    <!-- 02. EDITOR -->
-    <section class="editor">
+    <!-- =====================================================
+         02. BREADCRUMB
+    ====================================================== -->
 
-      <div class="field">
-        <label for="germanInput">
-          🇩🇪 Frase em alemão
-        </label>
-
-        <textarea
-          id="germanInput"
-          placeholder="Ex.: Ich halte heute einen Vortrag."
-        ></textarea>
-      </div>
+    <nav
+      class="breadcrumb"
+      id="breadcrumb"
+      aria-label="Caminho das pastas"
+    ></nav>
 
 
-      <div class="field">
-        <label for="portugueseInput">
-          🇧🇷 Tradução em português
-        </label>
+    <!-- =====================================================
+         03. ACTIONS
+    ====================================================== -->
 
-        <textarea
-          id="portugueseInput"
-          placeholder="Ex.: Hoje eu faço uma apresentação."
-        ></textarea>
-      </div>
-
+    <section class="toolbar">
 
       <button
         type="button"
-        class="create-button"
-        id="createCardButton"
+        class="button button-primary"
+        id="createFolderButton"
       >
-        Criar carta
+        ＋ Nova pasta
       </button>
 
     </section>
 
 
-    <!-- 03. FLASHCARD -->
-    <section class="card-area">
+    <!-- =====================================================
+         04. WORKSPACE
+    ====================================================== -->
+
+    <section class="workspace-grid">
+
+      <!-- LIBRARY -->
+      <section class="library-panel">
+
+        <div class="section-header">
+          <h2>Pastas</h2>
+        </div>
+
+        <div
+          class="folder-grid"
+          id="folderGrid"
+        ></div>
+
+
+        <div class="section-header section-header-spaced">
+          <h2>Cartas</h2>
+        </div>
+
+        <div
+          class="card-list"
+          id="cardList"
+        ></div>
+
+      </section>
+
+
+      <!-- ===================================================
+           05. CARD FORM
+      ==================================================== -->
+
+      <section class="card-form-panel">
+
+        <div class="section-header">
+          <h2>Nova carta</h2>
+
+          <span
+            class="current-folder-label"
+            id="currentFolderLabel"
+          ></span>
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="cardTitleInput">
+            Nome da carta
+          </label>
+
+          <input
+            id="cardTitleInput"
+            type="text"
+            autocomplete="off"
+            placeholder="Ex.: Konjunktiv II"
+          >
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="cardFrontInput">
+            Frente
+          </label>
+
+          <textarea
+            id="cardFrontInput"
+            placeholder="Digite o conteúdo da frente da carta."
+          ></textarea>
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="cardBackInput">
+            Verso
+          </label>
+
+          <textarea
+            id="cardBackInput"
+            placeholder="Digite o conteúdo do verso da carta."
+          ></textarea>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="button button-primary button-full"
+          id="saveCardButton"
+        >
+          Salvar carta
+        </button>
+
+      </section>
+
+    </section>
+
+
+    <!-- =====================================================
+         06. FLASHCARD PREVIEW
+    ====================================================== -->
+
+    <section class="preview-section">
+
+      <div class="section-header preview-header">
+
+        <div>
+          <h2>Carta</h2>
+
+          <p
+            class="preview-description"
+            id="previewDescription"
+          >
+            Selecione ou crie uma carta.
+          </p>
+        </div>
+
+      </div>
+
 
       <div
         class="flashcard"
         id="flashcard"
         role="button"
         tabindex="0"
+        aria-label="Virar carta"
       >
 
-        <div class="card-inner">
+        <div class="flashcard-inner">
 
           <!-- FRONT -->
-          <div class="card-face card-front">
+          <article class="flashcard-face flashcard-front">
 
-            <span class="language">
-              🇩🇪 Alemão
+            <span class="card-side-label">
+              Frente
             </span>
+
+            <h3
+              class="flashcard-title"
+              id="frontCardTitle"
+            >
+              Nome da carta
+            </h3>
 
             <div
-              class="card-text"
-              id="frontText"
+              class="flashcard-content"
+              id="frontCardContent"
             >
-              Ich halte heute einen Vortrag.
+              Conteúdo da frente
             </div>
 
-            <span class="hint">
-              Clique para virar ↔️
-            </span>
-
-          </div>
+          </article>
 
 
           <!-- BACK -->
-          <div class="card-face card-back">
+          <article class="flashcard-face flashcard-back">
 
-            <span class="language">
-              🇧🇷 Português
+            <span class="card-side-label">
+              Verso
             </span>
+
+            <h3
+              class="flashcard-title"
+              id="backCardTitle"
+            >
+              Nome da carta
+            </h3>
 
             <div
-              class="card-text"
-              id="backText"
+              class="flashcard-content"
+              id="backCardContent"
             >
-              Hoje eu faço uma apresentação.
+              Conteúdo do verso
             </div>
 
-            <span class="hint">
-              Clique para voltar ↔️
-            </span>
-
-          </div>
+          </article>
 
         </div>
 
       </div>
 
-    </section>
-
-
-    <!-- 04. CONTROLS -->
-    <div class="card-controls">
 
       <button
         type="button"
-        class="flip-button"
-        id="flipButton"
+        class="button button-secondary flip-button"
+        id="flipCardButton"
       >
-        ↔️ Virar carta
+        ↔ Virar carta
       </button>
 
-    </div>
+    </section>
 
   </main>
 
 
-  <script src="script.js"></script>
+  <script src="js/script.js"></script>
 
 </body>
+
 </html>
