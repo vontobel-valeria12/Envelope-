@@ -8,26 +8,46 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   min-height: 100vh;
 
-  font-family: Arial, sans-serif;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
 
-  background: #f5f1e8;
-  color: #2f2f2f;
+  background: #f4f1ea;
+  color: #292929;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
 }
 
 
 /* =========================================================
-   02. PAGE
+   02. APP SHELL
 ========================================================= */
 
-.page {
-  width: min(100%, 900px);
+.app-shell {
+  width: min(1120px, 100%);
 
   margin: 0 auto;
 
-  padding: 30px 18px 60px;
+  padding:
+    32px
+    18px
+    70px;
 }
 
 
@@ -35,153 +55,426 @@ body {
    03. HEADER
 ========================================================= */
 
-.header {
-  text-align: center;
-
-  margin-bottom: 30px;
+.app-header {
+  margin-bottom: 24px;
 }
 
-.header h1 {
-  font-size: clamp(28px, 5vw, 42px);
+.app-header h1 {
+  margin-bottom: 6px;
 
-  margin-bottom: 8px;
+  font-size: clamp(
+    32px,
+    6vw,
+    46px
+  );
 }
 
-.header p {
-  color: #6b6b6b;
+.app-header p {
+  color: #737373;
 
   font-size: 16px;
 }
 
 
 /* =========================================================
-   04. EDITOR
+   04. BREADCRUMB
 ========================================================= */
 
-.editor {
-  background: #ffffff;
+.breadcrumb {
+  display: flex;
 
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 7px;
+
+  min-height: 32px;
+
+  margin-bottom: 18px;
+}
+
+.breadcrumb-button {
+  border: 0;
+
+  background: transparent;
+
+  color: #315f52;
+
+  font-weight: 700;
+}
+
+.breadcrumb-button:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  color: #999999;
+}
+
+
+/* =========================================================
+   05. TOOLBAR
+========================================================= */
+
+.toolbar {
+  margin-bottom: 22px;
+}
+
+
+/* =========================================================
+   06. BUTTONS
+========================================================= */
+
+.button {
+  border: 0;
+
+  border-radius: 12px;
+
+  padding:
+    12px
+    18px;
+
+  font-weight: 700;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.button:hover {
+  box-shadow:
+    0 6px 16px
+    rgba(0, 0, 0, 0.08);
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+.button-primary {
+  background: #315f52;
+  color: #ffffff;
+}
+
+.button-secondary {
+  border: 1px solid #d4d4d4;
+
+  background: #ffffff;
+  color: #292929;
+}
+
+.button-full {
+  width: 100%;
+}
+
+
+/* =========================================================
+   07. WORKSPACE
+========================================================= */
+
+.workspace-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(320px, 430px);
+
+  gap: 24px;
+
+  align-items: start;
+}
+
+
+/* =========================================================
+   08. PANELS
+========================================================= */
+
+.library-panel,
+.card-form-panel {
   padding: 22px;
 
   border-radius: 20px;
 
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
 
-  margin-bottom: 35px;
+  box-shadow:
+    0 10px 28px
+    rgba(0, 0, 0, 0.07);
 }
 
-.field {
-  margin-bottom: 18px;
+.section-header {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 16px;
 }
 
-.field label {
+.section-header h2 {
+  font-size: 21px;
+}
+
+.section-header-spaced {
+  margin-top: 30px;
+}
+
+.current-folder-label {
+  max-width: 180px;
+
+  overflow: hidden;
+
+  color: #777777;
+
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   09. FOLDERS
+========================================================= */
+
+.folder-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fill,
+      minmax(145px, 1fr)
+    );
+
+  gap: 12px;
+}
+
+.folder-button {
+  min-height: 105px;
+
+  border: 1px solid #e1ddd4;
+  border-radius: 14px;
+
+  padding: 15px;
+
+  background: #faf8f3;
+
+  text-align: left;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.folder-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 7px 18px
+    rgba(0, 0, 0, 0.07);
+}
+
+.folder-icon {
   display: block;
+
+  margin-bottom: 9px;
+
+  font-size: 29px;
+}
+
+.folder-name {
+  display: block;
+
+  overflow-wrap: anywhere;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   10. CARD LIST
+========================================================= */
+
+.card-list {
+  display: grid;
+
+  gap: 10px;
+}
+
+.card-list-button {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  width: 100%;
+
+  border: 1px solid #e2ddd4;
+  border-radius: 13px;
+
+  padding: 13px;
+
+  background: #ffffff;
+
+  text-align: left;
+
+  transition: background 0.15s ease;
+}
+
+.card-list-button:hover {
+  background: #f8f6f1;
+}
+
+.card-list-icon {
+  flex-shrink: 0;
+
+  font-size: 23px;
+}
+
+.card-list-info {
+  min-width: 0;
+}
+
+.card-list-title {
+  display: block;
+
+  overflow: hidden;
 
   font-weight: 700;
 
-  margin-bottom: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.field textarea {
+.card-list-preview {
+  display: block;
+
+  margin-top: 4px;
+
+  overflow: hidden;
+
+  color: #8a8a8a;
+
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   11. CARD FORM
+========================================================= */
+
+.form-field {
+  margin-bottom: 18px;
+}
+
+.form-field label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-weight: 700;
+}
+
+.form-field input,
+.form-field textarea {
   width: 100%;
-  min-height: 95px;
 
-  resize: vertical;
+  border: 1px solid #d5d5d5;
+  border-radius: 12px;
 
-  border: 1px solid #d7d7d7;
-  border-radius: 14px;
+  padding: 13px;
 
-  padding: 14px;
-
-  font-size: 17px;
-  line-height: 1.5;
+  background: #ffffff;
+  color: #292929;
 
   outline: none;
 }
 
-.field textarea:focus {
-  border-color: #777777;
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: #315f52;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(49, 95, 82, 0.09);
+}
+
+.form-field textarea {
+  min-height: 120px;
+
+  resize: vertical;
+
+  line-height: 1.5;
 }
 
 
 /* =========================================================
-   05. BUTTONS
+   12. PREVIEW
 ========================================================= */
 
-button {
-  border: 0;
-
-  border-radius: 14px;
-
-  padding: 13px 18px;
-
-  font-size: 16px;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition: transform 0.2s ease;
-}
-
-button:active {
-  transform: scale(0.97);
-}
-
-.create-button {
-  width: 100%;
-
-  background: #2f5d50;
-  color: #ffffff;
-}
-
-.flip-button {
-  background: #ffffff;
-  color: #2f2f2f;
-
-  border: 1px solid #d8d8d8;
-}
-
-
-/* =========================================================
-   06. FLASHCARD
-========================================================= */
-
-.card-area {
+.preview-section {
   display: flex;
 
-  justify-content: center;
+  flex-direction: column;
+
+  align-items: center;
+
+  margin-top: 38px;
 }
 
+.preview-header {
+  width: min(620px, 100%);
+}
+
+.preview-description {
+  margin-top: 5px;
+
+  color: #777777;
+
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   13. FLASHCARD
+========================================================= */
+
 .flashcard {
-  width: min(100%, 560px);
-  height: 320px;
+  width: min(620px, 100%);
+
+  height: 360px;
 
   perspective: 1200px;
 
   cursor: pointer;
+
+  outline: none;
 }
 
-.card-inner {
+.flashcard-inner {
   position: relative;
 
   width: 100%;
   height: 100%;
 
-  transition: transform 0.7s;
-
   transform-style: preserve-3d;
+
+  transition:
+    transform 0.65s ease;
 }
 
-.flashcard.flipped .card-inner {
+.flashcard.is-flipped .flashcard-inner {
   transform: rotateY(180deg);
 }
 
-
-/* =========================================================
-   07. CARD FACE
-========================================================= */
-
-.card-face {
+.flashcard-face {
   position: absolute;
 
   inset: 0;
@@ -189,29 +482,33 @@ button:active {
   display: flex;
 
   flex-direction: column;
+
   align-items: center;
   justify-content: center;
 
+  padding: 34px;
+
+  border-radius: 26px;
+
   text-align: center;
-
-  border-radius: 28px;
-
-  padding: 28px;
 
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 16px 38px
+    rgba(0, 0, 0, 0.12);
 }
 
-.card-front {
+.flashcard-front {
+  border: 2px solid #2b2b2b;
+
   background: #ffffff;
-
-  border: 3px solid #1d1d1d;
+  color: #292929;
 }
 
-.card-back {
-  background: #2f5d50;
+.flashcard-back {
+  background: #315f52;
   color: #ffffff;
 
   transform: rotateY(180deg);
@@ -219,74 +516,125 @@ button:active {
 
 
 /* =========================================================
-   08. CARD CONTENT
+   14. FLASHCARD CONTENT
 ========================================================= */
 
-.language {
+.card-side-label {
   position: absolute;
 
-  top: 22px;
-  left: 24px;
+  top: 20px;
+  left: 23px;
 
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
 
-  opacity: 0.75;
+  opacity: 0.7;
 }
 
-.card-text {
-  font-size: clamp(24px, 5vw, 36px);
+.flashcard-title {
+  width: 100%;
 
-  line-height: 1.4;
+  margin-bottom: 22px;
 
-  font-weight: 700;
+  font-size: clamp(
+    24px,
+    5vw,
+    34px
+  );
 
   overflow-wrap: anywhere;
 }
 
-.hint {
-  position: absolute;
+.flashcard-content {
+  width: 100%;
 
-  bottom: 20px;
+  max-height: 210px;
 
-  font-size: 13px;
+  overflow-y: auto;
 
-  opacity: 0.55;
+  font-size: clamp(
+    19px,
+    4vw,
+    27px
+  );
+
+  line-height: 1.5;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 
 /* =========================================================
-   09. CARD CONTROLS
+   15. FLIP BUTTON
 ========================================================= */
 
-.card-controls {
-  display: flex;
-
-  justify-content: center;
-
-  margin-top: 22px;
+.flip-button {
+  margin-top: 20px;
 }
 
 
 /* =========================================================
-   10. MOBILE
+   16. EMPTY STATE
 ========================================================= */
 
-@media (max-width: 600px) {
+.empty-state {
+  padding: 12px 0;
 
-  .page {
-    padding-top: 20px;
+  color: #999999;
+
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   17. MOBILE
+========================================================= */
+
+@media (max-width: 760px) {
+
+  .app-shell {
+    padding-top: 22px;
   }
 
-  .editor {
-    padding: 18px;
+  .workspace-grid {
+    grid-template-columns: 1fr;
   }
 
   .flashcard {
-    height: 290px;
+    height: 330px;
   }
 
-  .card-face {
-    padding: 24px;
+  .flashcard-face {
+    padding:
+      60px
+      24px
+      30px;
   }
+
+  .current-folder-label {
+    max-width: 130px;
+  }
+
+}
+
+
+/* =========================================================
+   18. SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+  .folder-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .flashcard {
+    height: 315px;
+  }
+
 }
